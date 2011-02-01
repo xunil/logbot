@@ -21,7 +21,7 @@ on :connect do
     if not options.has_key?(:channels) or options[:channels].empty?
         join '#logbot'
     else
-        join options[:channels]
+        options[:channels].each {|c| join c}
     end
 end
 
