@@ -18,7 +18,11 @@ configure do |c|
 end
 
 on :connect do
-    join '#logbot'
+    if not options.has_key?(:channels) or options[:channels].empty?
+        join '#logbot'
+    else
+        join options[:channels]
+    end
 end
 
 on :channel, /^\!/ do
