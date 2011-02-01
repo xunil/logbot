@@ -1,0 +1,1 @@
+This is a very simple IRC logging bot.  It connects to the server defined in logbot.yaml, joins the specified channels, and logs anything spoken to one file per channel under the directory structure YEAR/MONTH/YEAR-MONTH-DAY.CHANNEL.log.
