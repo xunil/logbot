@@ -17,6 +17,24 @@ configure do |c|
     c.password = options[:password]
 end
 
+# Helpers
+helpers do
+    def is_admin?(nick)
+        if not options.has_key?[:admins] or options[:admins].empty?
+            # Everyone is an admin!
+            return true
+        end
+
+        options[:admins].each do |admin_nick|
+            if admin_nick == nick
+                return true
+            end
+        end
+
+        return false
+    end
+end
+
 on :connect do
     if not options.has_key?(:channels) or options[:channels].empty?
         join '#logbot'
@@ -25,25 +43,32 @@ on :connect do
     end
 end
 
-on :channel, /^\!/ do
-    case message
-        when /^\!quit/
-            quit "Requested to quit"
+# Commands
+on :channel, /^\!(help|quit|part|join)([ \t]+[^ ]+)*/ do
+    if is_admin?(nick)
+        case matches[0]
+            when "help"
+                help_message(nick)
+            when "quit"
+                quit "Requested to quit"
+            when "part"
+                part channel
+            when "join"
+                join matches[1]
+        end
     end
 end
 
+# Logging
 on :channel, /^[^!]/ do
     now = Time.now
-    year = now.year
-    month = now.month
-    day = now.day
-    if not File.directory?(year.to_s)
-        Dir.mkdir(year.to_s)
+    if not File.directory?(now.year.to_s)
+        Dir.mkdir(now.year.to_s)
     end
-    if not File.directory?("%d/%02d" % [year, month])
-        Dir.mkdir("%d/%02d" % [year, month])
+    if not File.directory?("%d/%02d" % [now.year, now.month])
+        Dir.mkdir("%d/%02d" % [now.year, now.month])
     end
-    logfile_name = "%d/%02d/%d-%02d-%02d.%s.log" % [year, month, year, month, day, channel]
+    logfile_name = "%d/%02d/%d-%02d-%02d.%s.log" % [now.year, now.month, now.year, now.month, now.day, channel]
     timestamp = "%02d:%02d:%02d" % [now.hour, now.min, now.sec]
     File.open(logfile_name, "a") {|f| f.puts "#{timestamp} <#{nick}> #{message}"}
 end

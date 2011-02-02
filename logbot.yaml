@@ -6,3 +6,8 @@
 :channels:
     - '#logbot'
     - '#otherchannel'
+
+# :admins: key should be a list of nicks that are allowed to use admin commands.
+# Note that a string match on nickname is the ONLY check done!
+# :admins:
+#   - Xunil
